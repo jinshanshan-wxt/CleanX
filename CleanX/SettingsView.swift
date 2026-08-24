@@ -1,9 +1,11 @@
 import SwiftUI
+import UIKit
 
 struct SettingsView: View {
     @EnvironmentObject private var settings: AppSettings
     @Environment(\.dismiss) private var dismiss
     @State private var newKeyword = ""
+    @State private var selectedIcon = "default"
 
     var body: some View {
         NavigationStack {
@@ -64,6 +66,23 @@ struct SettingsView: View {
                     }
                 }
 
+                Section("App 图标") {
+                    Picker("图标", selection: $selectedIcon) {
+                        ForEach(AppIcons.all) { opt in
+                            Text(opt.label).tag(opt.id)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .onChange(of: selectedIcon) { _, newValue in
+                        if let opt = AppIcons.all.first(where: { $0.id == newValue }) {
+                            AppIcons.apply(opt)
+                        }
+                    }
+                    Text("切换后系统会弹一次确认，图标立即生效。")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
                 Section {
                     Button("保存并应用") { dismiss() }
                 }
@@ -74,6 +93,9 @@ struct SettingsView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("完成") { dismiss() }
                 }
+            }
+            .onAppear {
+                selectedIcon = UIApplication.shared.alternateIconName ?? "default"
             }
         }
     }

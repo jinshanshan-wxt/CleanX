@@ -1,11 +1,13 @@
 import SwiftUI
 import UIKit
+import WebKit
 
 struct SettingsView: View {
     @EnvironmentObject private var settings: AppSettings
     @Environment(\.dismiss) private var dismiss
     @State private var newKeyword = ""
     @State private var selectedIcon = "default"
+    @State private var loginStatus = "未检测"
 
     var body: some View {
         NavigationStack {
@@ -84,6 +86,13 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
 
+                Section("诊断") {
+                    Button("检查登录状态") { checkLogin() }
+                    Text(loginStatus)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
                 Section {
                     Button("保存并应用") { dismiss() }
                 }
@@ -97,6 +106,18 @@ struct SettingsView: View {
             }
             .onAppear {
                 selectedIcon = UIApplication.shared.alternateIconName ?? "default"
+            }
+        }
+    }
+
+    private func checkLogin() {
+        guard let wv = WebContainer.sharedWebView else {
+            loginStatus = "网页未初始化"
+            return
+        }
+        TwitterAPIClient.extractTokens(from: wv) { tokens in
+            DispatchQueue.main.async {
+                self.loginStatus = tokens != nil ? "✅ 已登录（检测到 auth_token）" : "❌ 未登录（请先切到网页模式登录）"
             }
         }
     }

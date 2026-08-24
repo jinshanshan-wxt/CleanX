@@ -4,6 +4,8 @@ import WebKit
 struct NativeTimelineView: View {
     @State private var tweets: [Tweet] = []
     @State private var message: String?
+    @State private var isLoadingMore = false
+    @State private var noMore = false
 
     var body: some View {
         VStack {
@@ -23,35 +25,75 @@ struct NativeTimelineView: View {
                         ForEach(tweets) { t in
                             TweetRow(tweet: t)
                         }
+                        if isLoadingMore {
+                            HStack { Spacer(); ProgressView(); Spacer() }
+                                .padding(.vertical, 8)
+                        } else if noMore {
+                            Text("没有更多了")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 8)
+                        }
+                        Color.clear
+                            .frame(height: 20)
+                            .onAppear { loadMore() }
                     }
                     .padding(.horizontal, 12)
                     .padding(.top, 8)
                 }
             }
         }
-        .onAppear { scrape() }
-        .refreshable { scrape() }
+        .onAppear { refresh() }
+        .refreshable { refresh() }
     }
 
-    private func scrape() {
+    private func refresh() {
+        noMore = false
+        scrape(append: false)
+    }
+
+    private func loadMore() {
+        guard !isLoadingMore, !noMore, !tweets.isEmpty else { return }
+        isLoadingMore = true
+        WebContainer.sharedWebView?.evaluateJavaScript("window.__CLEANX_scrollToBottom && window.__CLEANX_scrollToBottom()") { _, _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+                self.scrape(append: true)
+            }
+        }
+    }
+
+    private func scrape(append: Bool) {
         guard let wv = WebContainer.sharedWebView else {
             message = "网页未加载"
+            isLoadingMore = false
             return
         }
         wv.evaluateJavaScript("window.__CLEANX_scrape && window.__CLEANX_scrape()") { result, error in
             if let error {
-                DispatchQueue.main.async { self.message = error.localizedDescription }
+                DispatchQueue.main.async { self.message = error.localizedDescription; self.isLoadingMore = false }
                 return
             }
             guard let json = result as? String,
                   let data = json.data(using: .utf8),
                   let arr = try? JSONDecoder().decode([Tweet].self, from: data) else {
-                DispatchQueue.main.async { self.message = "解析失败" }
+                DispatchQueue.main.async { self.message = "解析失败"; self.isLoadingMore = false }
                 return
             }
             DispatchQueue.main.async {
-                self.tweets = arr
-                self.message = arr.isEmpty ? "没抓到推文（可能未登录或网页未加载完）" : nil
+                self.isLoadingMore = false
+                if append {
+                    let seen = Set(self.tweets.map { $0.id })
+                    let added = arr.filter { !seen.contains($0.id) }
+                    if added.isEmpty {
+                        self.noMore = true
+                    } else {
+                        self.tweets.append(contentsOf: added)
+                    }
+                } else {
+                    self.tweets = arr
+                    self.message = arr.isEmpty ? "没抓到推文（可能未登录或网页未加载完）" : nil
+                }
             }
         }
     }

@@ -194,7 +194,7 @@
       var authorName = (parts[0] || '').trim();
       var handlePart = parts.length > 1 ? parts[1].split('·')[0].trim() : '';
       out.push({
-        id: 't' + out.length + '_' + Math.random().toString(36).slice(2, 8),
+        id: 'cx' + hashCode((handlePart || '') + '|' + textEl.textContent + '|' + (timeEl ? timeEl.getAttribute('datetime') : '')),
         text: textEl.textContent,
         authorName: authorName,
         authorHandle: handlePart ? '@' + handlePart : '',
@@ -204,6 +204,18 @@
       });
     });
     return JSON.stringify(out);
+  };
+
+  function hashCode(str) {
+    var h = 0;
+    for (var i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) | 0; }
+    return Math.abs(h).toString(36);
+  }
+
+  // 分页：把后台网页滚到底，触发 X 加载更多
+  window.__CLEANX_scrollToBottom = function () {
+    window.scrollTo(0, document.body.scrollHeight);
+    return document.body.scrollHeight;
   };
 
   function start() {

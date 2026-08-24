@@ -2,6 +2,7 @@ import SwiftUI
 import WebKit
 
 struct NativeTimelineView: View {
+    let onOpen: (String) -> Void
     @State private var tweets: [Tweet] = []
     @State private var message: String?
     @State private var isLoadingMore = false
@@ -23,9 +24,9 @@ struct NativeTimelineView: View {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 14) {
                         ForEach(tweets) { t in
-                            TweetRow(tweet: t) { tweet, action in
-                                performAction(tweet, action)
-                            }
+                            TweetRow(tweet: t,
+                                     onAction: { tweet, action in performAction(tweet, action) },
+                                     onOpen: { openTweet(t) })
                         }
                         if isLoadingMore {
                             HStack { Spacer(); ProgressView(); Spacer() }
@@ -70,6 +71,12 @@ struct NativeTimelineView: View {
         WebContainer.sharedWebView?.evaluateJavaScript(js, completionHandler: nil)
     }
 
+    private func openTweet(_ tweet: Tweet) {
+        guard let path = tweet.statusURL else { return }
+        let url = path.hasPrefix("http") ? path : "https://x.com" + path
+        onOpen(url)
+    }
+
     private func scrape(append: Bool) {
         guard let wv = WebContainer.sharedWebView else {
             message = "网页未加载"
@@ -110,6 +117,7 @@ struct NativeTimelineView: View {
 struct TweetRow: View {
     let tweet: Tweet
     let onAction: (Tweet, String) -> Void
+    let onOpen: () -> Void
     @State private var liked = false
     @State private var reposted = false
 
@@ -129,11 +137,33 @@ struct TweetRow: View {
                 if !tweet.mediaURLs.isEmpty {
                     MediaGrid(urls: tweet.mediaURLs)
                         .padding(.top, 2)
+                } else if tweet.hasVideo {
+                    videoThumb
                 }
                 actionBar
             }
         }
         .padding(.vertical, 4)
+        .contentShape(Rectangle())
+        .onTapGesture { onOpen() }
+    }
+
+    private var videoThumb: some View {
+        ZStack {
+            if let u = tweet.videoThumbURL {
+                RemoteImage(url: u)
+                    .frame(maxWidth: 260, maxHeight: 200)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            } else {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(maxWidth: 260, maxHeight: 160)
+            }
+            Image(systemName: "play.circle.fill")
+                .font(.system(size: 42))
+                .foregroundStyle(.white.opacity(0.92))
+        }
+        .padding(.top, 2)
     }
 
     private var actionBar: some View {

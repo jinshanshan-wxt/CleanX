@@ -18,7 +18,7 @@ struct ContentView: View {
                     .opacity(mode == .web ? 1 : 0)
                     .allowsHitTesting(mode == .web)
                 if mode == .native {
-                    NativeTimelineView()
+                    NativeTimelineView(onOpen: { url in openInWeb(url) })
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -48,5 +48,12 @@ struct ContentView: View {
     private func nav(_ urlString: String) {
         mode = .web
         WebContainer.sharedWebView?.load(URLRequest(url: URL(string: urlString)!))
+    }
+
+    private func openInWeb(_ urlString: String) {
+        mode = .web
+        if let u = URL(string: urlString) {
+            WebContainer.sharedWebView?.load(URLRequest(url: u))
+        }
     }
 }

@@ -12,4 +12,7 @@ struct Tweet: Identifiable, Decodable {
     let repostCount: String?
     let likeCount: String?
     let viewCount: String?
+    let hasVideo: Bool
+    let videoThumbURL: String?
+    let statusURL: String?
 }

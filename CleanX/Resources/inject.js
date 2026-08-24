@@ -189,6 +189,15 @@
         var src = im.src || '';
         if (src && media.indexOf(src) === -1) media.push(src);
       });
+      var statusLink = a.querySelector('a[href*="/status/"]');
+      var statusURL = statusLink ? statusLink.getAttribute('href') : null;
+      var videoEl = a.querySelector('video[poster]');
+      var videoThumb = videoEl ? videoEl.getAttribute('poster') : null;
+      if (!videoThumb) {
+        var vimg = a.querySelector('img[src*="ext_tw_video_thumb"], img[src*="amplify_video_thumb"]');
+        videoThumb = vimg ? vimg.src : null;
+      }
+      var hasVideo = !!a.querySelector('video') || !!videoThumb;
       var nm = nameEl ? (nameEl.textContent || '') : '';
       var parts = nm.split('@');
       var authorName = (parts[0] || '').trim();
@@ -204,7 +213,10 @@
         replyCount: actionCount(a, ['reply']),
         repostCount: actionCount(a, ['retweet', 'unretweet']),
         likeCount: actionCount(a, ['like', 'unlike']),
-        viewCount: viewCountOf(a)
+        viewCount: viewCountOf(a),
+        hasVideo: hasVideo,
+        videoThumbURL: videoThumb,
+        statusURL: statusURL
       });
     });
     return JSON.stringify(out);

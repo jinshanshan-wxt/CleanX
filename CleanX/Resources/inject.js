@@ -1,5 +1,5 @@
-// CleanX 注入脚本 —— 在 x.com 页面上执行
-// 功能：去广告、关键字屏蔽、主题/字体/强调色、隐藏各类模块、默认关注时间线、翻译按钮
+// CleanX 注入脚本
+// 功能：去广告、关键字屏蔽、主题/字体/强调色、隐藏各类模块、默认关注时间线、翻译按钮、抓取推文
 (function () {
   'use strict';
 
@@ -17,7 +17,6 @@
     return out;
   }
 
-  // —— 应用设置：主题 / 字体 / 强调色 / 各隐藏开关 ——
   function applySettings() {
     var s = window.__CLEANX__ || {};
     var t = s.theme;
@@ -38,13 +37,13 @@
     d.classList.toggle('cx-hide-bookmark', !!s.hideBookmark);
     d.classList.toggle('cx-hide-views', !!s.hideViewCount);
     d.classList.toggle('cx-hide-spaces', !!s.hideSpaces);
+    d.classList.toggle('cx-hide-chrome', !!s.hideChrome);
 
     window.__CLEANX__keywords = buildKeywordRegexes(s.keywords);
     window.__CLEANX__hideAds = s.hideAds !== false;
   }
   window.__CLEANX_applySettings = applySettings;
 
-  // —— 工具函数 ——
   function textOf(article) {
     var t = article.querySelector('[data-testid="tweetText"]');
     return t ? (t.textContent || '') : (article.textContent || '');
@@ -71,7 +70,6 @@
     return re.some(function (r) { return r.test(textOf(article)); });
   }
 
-  // 隐藏标题命中的模块（如 "推荐关注"、"Premium"）
   function findHeadings(root) {
     var list = [];
     if (root.matches && root.matches('h1,h2,h3,[role="heading"]')) list.push(root);
@@ -105,7 +103,6 @@
     });
   }
 
-  // 默认切到「关注」时间线（实验性）
   function maybeClickFollowing() {
     var s = window.__CLEANX__ || {};
     if (!s.alwaysFollowing) return;
@@ -120,7 +117,6 @@
     }
   }
 
-  // —— 翻译按钮 ——
   function addTranslateButton(article) {
     var textEl = article.querySelector('[data-testid="tweetText"]');
     if (!textEl || article.querySelector('.cx-translate')) return;
@@ -157,7 +153,6 @@
     btn.replaceWith(box);
   };
 
-  // —— 处理单条推文 ——
   function processArticle(article) {
     if (article.dataset.cxDone === '1') return;
     article.dataset.cxDone = '1';
@@ -180,6 +175,31 @@
     hideHeadingModules(root);
   }
 
+  // 原生模式抓取：把当前可见推文导出为 JSON
+  window.__CLEANX_scrape = function () {
+    var out = [];
+    document.querySelectorAll('article[data-testid="tweet"]').forEach(function (a) {
+      var textEl = a.querySelector('[data-testid="tweetText"]');
+      if (!textEl) return;
+      var nameEl = a.querySelector('[data-testid="User-Name"]');
+      var img = a.querySelector('img[src*="profile_images"], img[src*="pbs.twimg.com/profile"]');
+      var timeEl = a.querySelector('time');
+      var nm = nameEl ? (nameEl.textContent || '') : '';
+      var parts = nm.split('@');
+      var authorName = (parts[0] || '').trim();
+      var handlePart = parts.length > 1 ? parts[1].split('·')[0].trim() : '';
+      out.push({
+        id: 't' + out.length + '_' + Math.random().toString(36).slice(2, 8),
+        text: textEl.textContent,
+        authorName: authorName,
+        authorHandle: handlePart ? '@' + handlePart : '',
+        avatarURL: img ? img.src : null,
+        timestamp: timeEl ? timeEl.getAttribute('datetime') : null
+      });
+    });
+    return JSON.stringify(out);
+  };
+
   function start() {
     applySettings();
     var obs = new MutationObserver(function (muts) {
@@ -194,6 +214,15 @@
     scan(document);
     maybeClickFollowing();
     setTimeout(maybeClickFollowing, 1500);
+
+    // 兜底：每 2 秒清一遍漏网的广告
+    setInterval(function () {
+      if (!window.__CLEANX__hideAds) return;
+      document.querySelectorAll('[data-testid="placementTracking"]').forEach(function (el) {
+        var a = el.closest('article') || el.parentElement;
+        if (a) { a.style.display = 'none'; a.dataset.cxHidden = 'ad'; }
+      });
+    }, 2000);
   }
 
   if (document.readyState === 'loading') {

@@ -25,6 +25,7 @@ struct SettingsView: View {
                 }
 
                 Section("隐藏 / 过滤") {
+                    Toggle("隐藏 X 网页界面（去壳）", isOn: $settings.hideChrome)
                     Toggle("广告 / 推广", isOn: $settings.hideAds)
                     Toggle("推荐关注 (Who to follow)", isOn: $settings.hideWhoToFollow)
                     Toggle("Premium 推广", isOn: $settings.hidePremium)

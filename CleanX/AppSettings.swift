@@ -2,11 +2,9 @@ import SwiftUI
 import Combine
 
 final class AppSettings: ObservableObject {
-    // MARK: - 翻译
     @Published var apiKey: String { didSet { save(apiKey, "cleanx.apiKey") } }
     @Published var targetLanguage: String { didSet { save(targetLanguage, "cleanx.targetLanguage") } }
 
-    // MARK: - 隐藏 / 过滤
     @Published var hideAds: Bool { didSet { save(hideAds, "cleanx.hideAds") } }
     @Published var hideSidebars: Bool { didSet { save(hideSidebars, "cleanx.hideSidebars") } }
     @Published var hideWhoToFollow: Bool { didSet { save(hideWhoToFollow, "cleanx.hideWhoToFollow") } }
@@ -15,14 +13,12 @@ final class AppSettings: ObservableObject {
     @Published var hideViewCount: Bool { didSet { save(hideViewCount, "cleanx.hideViewCount") } }
     @Published var hideBookmark: Bool { didSet { save(hideBookmark, "cleanx.hideBookmark") } }
     @Published var hideSpaces: Bool { didSet { save(hideSpaces, "cleanx.hideSpaces") } }
+    @Published var hideChrome: Bool { didSet { save(hideChrome, "cleanx.hideChrome") } }
 
-    // MARK: - 关键字
     @Published var keywords: [String] { didSet { save(keywords, "cleanx.keywords") } }
 
-    // MARK: - 时间线
     @Published var alwaysFollowing: Bool { didSet { save(alwaysFollowing, "cleanx.alwaysFollowing") } }
 
-    // MARK: - 外观
     @Published var theme: Theme { didSet { save(theme.rawValue, "cleanx.theme") } }
     @Published var customFont: FontStyle { didSet { save(customFont.rawValue, "cleanx.customFont") } }
     @Published var accentColor: AccentColor { didSet { save(accentColor.rawValue, "cleanx.accentColor") } }
@@ -83,6 +79,7 @@ final class AppSettings: ObservableObject {
         hideViewCount = d.object(forKey: "cleanx.hideViewCount") as? Bool ?? false
         hideBookmark = d.object(forKey: "cleanx.hideBookmark") as? Bool ?? false
         hideSpaces = d.object(forKey: "cleanx.hideSpaces") as? Bool ?? false
+        hideChrome = d.object(forKey: "cleanx.hideChrome") as? Bool ?? true
         keywords = d.stringArray(forKey: "cleanx.keywords") ?? []
         alwaysFollowing = d.object(forKey: "cleanx.alwaysFollowing") as? Bool ?? false
         theme = Theme(rawValue: d.string(forKey: "cleanx.theme") ?? "") ?? .system
@@ -94,7 +91,6 @@ final class AppSettings: ObservableObject {
         UserDefaults.standard.set(value, forKey: key)
     }
 
-    /// 生成注入到网页里的设置对象（JS 片段）
     func settingsPayload() -> String {
         let cleaned = keywords
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -126,6 +122,7 @@ final class AppSettings: ObservableObject {
           hideViewCount: \(hideViewCount),
           hideBookmark: \(hideBookmark),
           hideSpaces: \(hideSpaces),
+          hideChrome: \(hideChrome),
           alwaysFollowing: \(alwaysFollowing),
           font: "\(fontCss)",
           accent: "\(accentColor.hex)",

@@ -1,11 +1,18 @@
-/* CleanX 注入样式 —— 仅在需要时生效 */
+/* CleanX 注入样式 */
+
+/* —— 去壳：隐藏 X 网页自己的界面 —— */
+html.cx-hide-chrome [data-testid="SideNav_NewTweet_Button"],
+html.cx-hide-chrome [data-testid="FloatingActionButtons"],
+html.cx-hide-chrome [data-testid="GrokDrawer"],
+html.cx-hide-chrome [data-testid="GrokImgGen"],
+html.cx-hide-chrome [role="tablist"] {
+  display: none !important;
+}
 
 /* 隐藏右侧边栏（趋势 / 推荐关注） */
 html.cx-hide-sidebars [data-testid="sidebarColumn"] {
   display: none !important;
 }
-
-/* 隐藏侧栏后让主时间线占满宽度 */
 html.cx-hide-sidebars main[role="main"] {
   max-width: none !important;
 }
@@ -21,7 +28,7 @@ html.cx-hide-bookmark [data-testid="Bookmark"] {
   display: none !important;
 }
 
-/* 隐藏浏览量（浏览量链接的 aria-label 以 "views" 结尾） */
+/* 隐藏浏览量 */
 html.cx-hide-views a[aria-label$="views" i] {
   display: none !important;
 }

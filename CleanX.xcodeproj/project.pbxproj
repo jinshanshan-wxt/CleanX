@@ -15,6 +15,8 @@
 		0A0000000000000000000036 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0000000000000000000026 /* SettingsView.swift */; };
 		0A0000000000000000000037 /* InjectionScripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0000000000000000000027 /* InjectionScripts.swift */; };
 		0A0000000000000000000043 /* AppIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0000000000000000000041 /* AppIcons.swift */; };
+		0A0000000000000000000046 /* Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0000000000000000000044 /* Tweet.swift */; };
+		0A0000000000000000000047 /* NativeTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0000000000000000000045 /* NativeTimelineView.swift */; };
 		0A0000000000000000000038 /* inject.js in Resources */ = {isa = PBXBuildFile; fileRef = 0A0000000000000000000028 /* inject.js */; };
 		0A0000000000000000000039 /* inject.css in Resources */ = {isa = PBXBuildFile; fileRef = 0A0000000000000000000029 /* inject.css */; };
 		0A0000000000000000000042 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A0000000000000000000040 /* Assets.xcassets */; };
@@ -30,6 +32,8 @@
 		0A0000000000000000000026 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0A0000000000000000000027 /* InjectionScripts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectionScripts.swift; sourceTree = "<group>"; };
 		0A0000000000000000000041 /* AppIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIcons.swift; sourceTree = "<group>"; };
+		0A0000000000000000000044 /* Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tweet.swift; sourceTree = "<group>"; };
+		0A0000000000000000000045 /* NativeTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeTimelineView.swift; sourceTree = "<group>"; };
 		0A0000000000000000000040 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A0000000000000000000028 /* inject.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = inject.js; sourceTree = "<group>"; };
 		0A0000000000000000000029 /* inject.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = inject.css; sourceTree = "<group>"; };
@@ -74,6 +78,8 @@
 				0A0000000000000000000026 /* SettingsView.swift */,
 				0A0000000000000000000027 /* InjectionScripts.swift */,
 				0A0000000000000000000041 /* AppIcons.swift */,
+				0A0000000000000000000044 /* Tweet.swift */,
+				0A0000000000000000000045 /* NativeTimelineView.swift */,
 				0A0000000000000000000040 /* Assets.xcassets */,
 				0A0000000000000000000005 /* Resources */,
 				0A000000000000000000002A /* Info.plist */,
@@ -169,6 +175,8 @@
 				0A0000000000000000000036 /* SettingsView.swift in Sources */,
 				0A0000000000000000000037 /* InjectionScripts.swift in Sources */,
 				0A0000000000000000000043 /* AppIcons.swift in Sources */,
+				0A0000000000000000000046 /* Tweet.swift in Sources */,
+				0A0000000000000000000047 /* NativeTimelineView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

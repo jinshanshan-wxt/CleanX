@@ -18,9 +18,19 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                Section("过滤") {
-                    Toggle("隐藏广告 / 推广", isOn: $settings.hideAds)
-                    Toggle("隐藏侧边栏推荐", isOn: $settings.hideSidebars)
+                Section("时间线") {
+                    Toggle("默认打开「关注」页（实验性）", isOn: $settings.alwaysFollowing)
+                }
+
+                Section("隐藏 / 过滤") {
+                    Toggle("广告 / 推广", isOn: $settings.hideAds)
+                    Toggle("推荐关注 (Who to follow)", isOn: $settings.hideWhoToFollow)
+                    Toggle("Premium 推广", isOn: $settings.hidePremium)
+                    Toggle("认证蓝标", isOn: $settings.hideVerified)
+                    Toggle("浏览量", isOn: $settings.hideViewCount)
+                    Toggle("收藏按钮", isOn: $settings.hideBookmark)
+                    Toggle("Spaces 语音", isOn: $settings.hideSpaces)
+                    Toggle("右侧边栏", isOn: $settings.hideSidebars)
                 }
 
                 Section("关键字屏蔽") {
@@ -44,9 +54,13 @@ struct SettingsView: View {
 
                 Section("外观") {
                     Picker("主题", selection: $settings.theme) {
-                        ForEach(AppSettings.Theme.allCases) { t in
-                            Text(t.rawValue).tag(t)
-                        }
+                        ForEach(AppSettings.Theme.allCases) { t in Text(t.rawValue).tag(t) }
+                    }
+                    Picker("字体", selection: $settings.customFont) {
+                        ForEach(AppSettings.FontStyle.allCases) { f in Text(f.rawValue).tag(f) }
+                    }
+                    Picker("强调色", selection: $settings.accentColor) {
+                        ForEach(AppSettings.AccentColor.allCases) { c in Text(c.rawValue).tag(c) }
                     }
                 }
 

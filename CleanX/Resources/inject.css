@@ -1,6 +1,6 @@
 /* CleanX 注入样式 —— 仅在需要时生效 */
 
-/* 隐藏右侧边栏（趋势 / 推荐关注），由 JS 在 html 上切换 class 控制 */
+/* 隐藏右侧边栏（趋势 / 推荐关注） */
 html.cx-hide-sidebars [data-testid="sidebarColumn"] {
   display: none !important;
 }
@@ -8,4 +8,26 @@ html.cx-hide-sidebars [data-testid="sidebarColumn"] {
 /* 隐藏侧栏后让主时间线占满宽度 */
 html.cx-hide-sidebars main[role="main"] {
   max-width: none !important;
+}
+
+/* 隐藏认证蓝标 */
+html.cx-hide-verified [data-testid="icon-verified"] {
+  display: none !important;
+}
+
+/* 隐藏收藏按钮 */
+html.cx-hide-bookmark [data-testid="bookmark"],
+html.cx-hide-bookmark [data-testid="Bookmark"] {
+  display: none !important;
+}
+
+/* 隐藏浏览量（浏览量链接的 aria-label 以 "views" 结尾） */
+html.cx-hide-views a[aria-label$="views" i] {
+  display: none !important;
+}
+
+/* 隐藏 Spaces 语音直播模块 */
+html.cx-hide-spaces [data-testid="spacesList"],
+html.cx-hide-spaces [data-testid="Spaces"] {
+  display: none !important;
 }

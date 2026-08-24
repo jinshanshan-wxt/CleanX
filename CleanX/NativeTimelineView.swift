@@ -23,7 +23,9 @@ struct NativeTimelineView: View {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 14) {
                         ForEach(tweets) { t in
-                            TweetRow(tweet: t)
+                            TweetRow(tweet: t) { tweet, action in
+                                performAction(tweet, action)
+                            }
                         }
                         if isLoadingMore {
                             HStack { Spacer(); ProgressView(); Spacer() }
@@ -61,6 +63,11 @@ struct NativeTimelineView: View {
                 self.scrape(append: true)
             }
         }
+    }
+
+    private func performAction(_ tweet: Tweet, _ action: String) {
+        let js = "window.__CLEANX_act && window.__CLEANX_act('\(tweet.id)', '\(action)')"
+        WebContainer.sharedWebView?.evaluateJavaScript(js, completionHandler: nil)
     }
 
     private func scrape(append: Bool) {
@@ -102,6 +109,9 @@ struct NativeTimelineView: View {
 // 单条推文行
 struct TweetRow: View {
     let tweet: Tweet
+    let onAction: (Tweet, String) -> Void
+    @State private var liked = false
+    @State private var reposted = false
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
@@ -120,9 +130,51 @@ struct TweetRow: View {
                     MediaGrid(urls: tweet.mediaURLs)
                         .padding(.top, 2)
                 }
+                actionBar
             }
         }
         .padding(.vertical, 4)
+    }
+
+    private var actionBar: some View {
+        HStack(spacing: 22) {
+            Button { onAction(tweet, "reply") } label: {
+                HStack(spacing: 3) {
+                    Image(systemName: "bubble.left")
+                    if let c = tweet.replyCount, !c.isEmpty { Text(c) }
+                }
+            }
+            Button {
+                reposted.toggle()
+                onAction(tweet, "repost")
+            } label: {
+                HStack(spacing: 3) {
+                    Image(systemName: "repeat")
+                    if let c = tweet.repostCount, !c.isEmpty { Text(c) }
+                }
+            }
+            .foregroundStyle(reposted ? .green : .secondary)
+            Button {
+                liked.toggle()
+                onAction(tweet, "like")
+            } label: {
+                HStack(spacing: 3) {
+                    Image(systemName: liked ? "heart.fill" : "heart")
+                    if let c = tweet.likeCount, !c.isEmpty { Text(c) }
+                }
+            }
+            .foregroundStyle(liked ? .red : .secondary)
+            if let c = tweet.viewCount, !c.isEmpty {
+                HStack(spacing: 3) {
+                    Image(systemName: "eye")
+                    Text(c)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .padding(.top, 4)
     }
 }
 

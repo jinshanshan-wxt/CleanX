@@ -194,13 +194,17 @@
       var authorName = (parts[0] || '').trim();
       var handlePart = parts.length > 1 ? parts[1].split('·')[0].trim() : '';
       out.push({
-        id: 'cx' + hashCode((handlePart || '') + '|' + textEl.textContent + '|' + (timeEl ? timeEl.getAttribute('datetime') : '')),
+        id: tweetId(a),
         text: textEl.textContent,
         authorName: authorName,
         authorHandle: handlePart ? '@' + handlePart : '',
         avatarURL: img ? img.src : null,
         timestamp: timeEl ? timeEl.getAttribute('datetime') : null,
-        mediaURLs: media
+        mediaURLs: media,
+        replyCount: actionCount(a, ['reply']),
+        repostCount: actionCount(a, ['retweet', 'unretweet']),
+        likeCount: actionCount(a, ['like', 'unlike']),
+        viewCount: viewCountOf(a)
       });
     });
     return JSON.stringify(out);
@@ -211,6 +215,55 @@
     for (var i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) | 0; }
     return Math.abs(h).toString(36);
   }
+
+  function handleOf(a) {
+    var nameEl = a.querySelector('[data-testid="User-Name"]');
+    var nm = nameEl ? (nameEl.textContent || '') : '';
+    var parts = nm.split('@');
+    return parts.length > 1 ? parts[1].split('·')[0].trim() : '';
+  }
+
+  function tweetId(a) {
+    var textEl = a.querySelector('[data-testid="tweetText"]');
+    var timeEl = a.querySelector('time');
+    return 'cx' + hashCode((handleOf(a) || '') + '|' + (textEl ? textEl.textContent : '') + '|' + (timeEl ? timeEl.getAttribute('datetime') : ''));
+  }
+
+  function actionCount(a, ids) {
+    for (var i = 0; i < ids.length; i++) {
+      var el = a.querySelector('[data-testid="' + ids[i] + '"]');
+      if (!el) continue;
+      var aria = el.getAttribute('aria-label') || '';
+      var m = aria.match(/\d[\d,.]*[KMB万]?/i);
+      if (m) return m[0];
+      return (el.textContent || '').trim().replace(/\s+/g, ' ');
+    }
+    return '';
+  }
+
+  function viewCountOf(a) {
+    var el = a.querySelector('a[aria-label$="views" i]') || a.querySelector('[data-testid="app-text-transition-container"]');
+    if (!el) return '';
+    var aria = el.getAttribute('aria-label') || (el.textContent || '');
+    var m = aria.match(/\d[\d,.]*[KMB万]?/i);
+    return m ? m[0] : '';
+  }
+
+  // 原生侧触发互动：按稳定 id 找到网页里对应推文，点对应按钮
+  window.__CLEANX_act = function (id, action) {
+    var articles = document.querySelectorAll('article[data-testid="tweet"]');
+    for (var i = 0; i < articles.length; i++) {
+      var a = articles[i];
+      if (tweetId(a) !== id) continue;
+      var sel = '';
+      if (action === 'like') sel = '[data-testid="like"],[data-testid="unlike"]';
+      else if (action === 'repost') sel = '[data-testid="retweet"],[data-testid="unretweet"]';
+      else if (action === 'reply') sel = '[data-testid="reply"]';
+      var btn = sel ? a.querySelector(sel) : null;
+      if (btn) { btn.click(); return true; }
+    }
+    return false;
+  };
 
   // 分页：把后台网页滚到底，触发 X 加载更多
   window.__CLEANX_scrollToBottom = function () {

@@ -7,4 +7,5 @@ struct Tweet: Identifiable, Decodable {
     let authorHandle: String
     let avatarURL: String?
     let timestamp: String?
+    let mediaURLs: [String]
 }

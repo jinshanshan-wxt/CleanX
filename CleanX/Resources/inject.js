@@ -184,6 +184,11 @@
       var nameEl = a.querySelector('[data-testid="User-Name"]');
       var img = a.querySelector('img[src*="profile_images"], img[src*="pbs.twimg.com/profile"]');
       var timeEl = a.querySelector('time');
+      var media = [];
+      a.querySelectorAll('img[src*="pbs.twimg.com/media"]').forEach(function (im) {
+        var src = im.src || '';
+        if (src && media.indexOf(src) === -1) media.push(src);
+      });
       var nm = nameEl ? (nameEl.textContent || '') : '';
       var parts = nm.split('@');
       var authorName = (parts[0] || '').trim();
@@ -194,7 +199,8 @@
         authorName: authorName,
         authorHandle: handlePart ? '@' + handlePart : '',
         avatarURL: img ? img.src : null,
-        timestamp: timeEl ? timeEl.getAttribute('datetime') : null
+        timestamp: timeEl ? timeEl.getAttribute('datetime') : null,
+        mediaURLs: media
       });
     });
     return JSON.stringify(out);

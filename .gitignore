@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# Xcode
+build/
+DerivedData/
+*.xcuserdatad/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM
+*.dSYM.zip
+profile
+*.mobileprovision
+*.cer
+*.p12
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# Generated
+*.generated.swift

@@ -1,0 +1,11 @@
+/* CleanX 注入样式 —— 仅在需要时生效 */
+
+/* 隐藏右侧边栏（趋势 / 推荐关注），由 JS 在 html 上切换 class 控制 */
+html.cx-hide-sidebars [data-testid="sidebarColumn"] {
+  display: none !important;
+}
+
+/* 隐藏侧栏后让主时间线占满宽度 */
+html.cx-hide-sidebars main[role="main"] {
+  max-width: none !important;
+}

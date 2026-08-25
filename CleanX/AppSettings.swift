@@ -18,6 +18,7 @@ final class AppSettings: ObservableObject {
     @Published var keywords: [String] { didSet { save(keywords, "cleanx.keywords") } }
 
     @Published var alwaysFollowing: Bool { didSet { save(alwaysFollowing, "cleanx.alwaysFollowing") } }
+    @Published var showWebMode: Bool { didSet { save(showWebMode, "cleanx.showWebMode") } }
 
     @Published var theme: Theme { didSet { save(theme.rawValue, "cleanx.theme") } }
     @Published var customFont: FontStyle { didSet { save(customFont.rawValue, "cleanx.customFont") } }
@@ -82,6 +83,7 @@ final class AppSettings: ObservableObject {
         hideChrome = d.object(forKey: "cleanx.hideChrome") as? Bool ?? true
         keywords = d.stringArray(forKey: "cleanx.keywords") ?? []
         alwaysFollowing = d.object(forKey: "cleanx.alwaysFollowing") as? Bool ?? false
+        showWebMode = d.object(forKey: "cleanx.showWebMode") as? Bool ?? false
         theme = Theme(rawValue: d.string(forKey: "cleanx.theme") ?? "") ?? .system
         customFont = FontStyle(rawValue: d.string(forKey: "cleanx.customFont") ?? "") ?? .system
         accentColor = AccentColor(rawValue: d.string(forKey: "cleanx.accentColor") ?? "") ?? .blue

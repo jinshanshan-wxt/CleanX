@@ -26,6 +26,13 @@ struct SettingsView: View {
                     Toggle("默认打开「关注」页（实验性）", isOn: $settings.alwaysFollowing)
                 }
 
+                Section("网页模式") {
+                    Toggle("显示网页模式", isOn: $settings.showWebMode)
+                    Text("默认只显示原生列表、网页完全隐藏。需要登录或查看完整内容时，开启此开关，再在顶部切到网页。")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
                 Section("隐藏 / 过滤") {
                     Toggle("隐藏 X 网页界面（去壳）", isOn: $settings.hideChrome)
                     Toggle("广告 / 推广", isOn: $settings.hideAds)

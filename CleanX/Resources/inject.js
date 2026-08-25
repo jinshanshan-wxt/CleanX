@@ -179,6 +179,10 @@
   window.__CLEANX_scrape = function () {
     var out = [];
     document.querySelectorAll('article[data-testid="tweet"]').forEach(function (a) {
+      // 跳过被隐藏的广告/关键字推文、以及推广/推荐内容
+      if (a.dataset.cxHidden) return;
+      if (a.style.display === 'none') return;
+      if (isPromoted(a) || isInlineSuggestion(a)) return;
       var textEl = a.querySelector('[data-testid="tweetText"]');
       if (!textEl) return;
       var nameEl = a.querySelector('[data-testid="User-Name"]');
